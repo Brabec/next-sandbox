@@ -1,18 +1,28 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { v4 as uuid } from 'uuid';
 
 const Todo = () => {
   const [task, setTask] = useState('');
   const [listTasks, setListTasks] = useState([]);
 
+  useEffect(() => {
+    const todo = localStorage.getItem('todo-app');
+    if (todo) {
+      const parsedData = JSON.parse(todo);
+      setListTasks(parsedData);
+    }
+  }, []);
+
   const onSubmit = (event) => {
     event.preventDefault();
 
     if (task.length) {
-      setListTasks(prevTasks => [...prevTasks, {
+      const newTasks = [...listTasks, {
         id: uuid(),
-        name: task
-      }]);
+        name: task,
+      }];
+      setListTasks(newTasks);
+      localStorage.setItem('todo-app', JSON.stringify(newTasks));
       setTask('');
     }
   }
@@ -20,6 +30,7 @@ const Todo = () => {
   const removeTask = (element) => {
     const filteredTasks = listTasks.filter(item => item.id !== element.id);
     setListTasks(filteredTasks);
+    localStorage.setItem('todo-app', JSON.stringify(filteredTasks));
   }
 
   return (
