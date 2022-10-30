@@ -1,4 +1,5 @@
-const { useState } = require("react")
+import { useState } from 'react';
+import { v4 as uuid } from 'uuid';
 
 const Todo = () => {
   const [task, setTask] = useState('');
@@ -8,9 +9,17 @@ const Todo = () => {
     event.preventDefault();
 
     if (task.length) {
-      setListTasks(prevTasks => [...prevTasks, task]);
+      setListTasks(prevTasks => [...prevTasks, {
+        id: uuid(),
+        name: task
+      }]);
       setTask('');
     }
+  }
+
+  const removeTask = (element) => {
+    const filteredTasks = listTasks.filter(item => item.id !== element.id);
+    setListTasks(filteredTasks);
   }
 
   return (
@@ -29,7 +38,7 @@ const Todo = () => {
       {listTasks.length > 0 ? (
         <ul>
           {listTasks.map((task, index) => (
-            <li key={index}>{task}</li>
+            <li key={index}>{task.name} - <button type="button" onClick={() => removeTask(task)}>remove</button></li>
           ))}
         </ul>
       ) : (
